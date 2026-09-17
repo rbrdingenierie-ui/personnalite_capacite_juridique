@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Le podcast de la personnalité et de la capacité juridique — BTS Banque</title>
+<style>
+:root{
+  --navy:#1B3A5C; --teal:#1E9688; --orange:#E2672A; --purple:#6B4E9E; --brown:#A97C3D;
+  --cream:#FBF3E1; --text:#23272B; --muted:#5B5F65; --line:#E3E7EC; --bg:#fff;
+  --font-body:'Poppins',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;}
+html{ font-size:100%; }
+body{
+  margin:0; font-family:var(--font-body); color:var(--text); background:var(--bg);
+  -webkit-font-smoothing:antialiased; transition:background .15s ease, color .15s ease;
+}
+a{color:inherit;}
+button{font-family:inherit;}
+
+/* ================= ACCESSIBILITÉ PSH ================= */
+.a11y-bar{
+  position:sticky; top:0; z-index:50; background:var(--navy); padding:9px 14px;
+  display:flex; flex-wrap:wrap; align-items:center; gap:6px; justify-content:center;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+.a11y-btn{
+  display:inline-flex; align-items:center; gap:5px; background:rgba(255,255,255,.08); color:#fff;
+  border:1px solid rgba(255,255,255,.18); border-radius:20px; padding:6px 11px; font-size:.72rem;
+  font-weight:600; cursor:pointer; line-height:1.2;
+}
+.a11y-btn:hover{ background:rgba(255,255,255,.16); }
+.a11y-btn[aria-pressed="true"]{ background:var(--orange); border-color:var(--orange); }
+.a11y-btn:focus-visible, a:focus-visible, audio:focus-visible{ outline:3px solid #E8A25A; outline-offset:2px; }
+.a11y-size{ display:inline-flex; gap:2px; }
+.a11y-size button{
+  background:rgba(255,255,255,.08); color:#fff; border:1px solid rgba(255,255,255,.18); border-radius:8px;
+  width:30px; height:30px; cursor:pointer; font-weight:700;
+}
+.a11y-size button:hover{ background:rgba(255,255,255,.16); }
+
+/* Contraste renforcé */
+body.a11y-contrast{ --text:#000; --muted:#2A2A2A; --line:#000; --cream:#FFF6DC; --bg:#fff; }
+body.a11y-contrast .hero{ background:#000; }
+body.a11y-contrast .episode{ border-width:2px; }
+body.a11y-contrast .episode-code{ outline:1px solid #000; }
+
+/* Police adaptée (chasse large, cf. recommandations PSH) */
+body.a11y-font{ --font-body:'Verdana','Segoe UI',sans-serif; }
+body.a11y-font .episode-title, body.a11y-font p, body.a11y-font .module-title{ letter-spacing:.2px; line-height:1.65; }
+
+/* Alléger les animations */
+body.a11y-reduce-motion .waveform span{ animation:none !important; transform:scaleY(.8) !important; }
+body.a11y-reduce-motion *{ transition:none !important; }
+
+/* Mode FALC : consignes courtes, un point par ligne */
+body.a11y-falc .full-text{ display:none; }
+body.a11y-falc .falc-text{ display:block !important; }
+.falc-text{ display:none; }
+
+/* ================= HERO ================= */
+.hero{
+  background:var(--navy); color:#fff; position:relative; overflow:hidden;
+  padding:1.6rem 1.4rem 1.8rem; text-align:center;
+}
+.hero::before, .hero::after{ content:""; position:absolute; border-radius:50%; background:rgba(255,255,255,.05); }
+.hero::before{ width:340px; height:340px; top:-160px; right:-100px; }
+.hero::after{ width:220px; height:220px; bottom:-120px; left:-60px; background:rgba(255,255,255,.04); }
+.eyebrow{ font-size:.68rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:#E8A25A; margin:0 0 .5rem; position:relative;}
+.hero h1{ font-size:clamp(1.3rem,4vw,1.9rem); font-weight:700; line-height:1.15; margin:0 0 .6rem; position:relative; }
+.hero p{ font-size:.9rem; line-height:1.5; color:#C7D0DE; max-width:520px; margin:0 auto 1rem; position:relative; }
+.waveform{ display:flex; align-items:flex-end; justify-content:center; gap:5px; height:34px; margin:0 auto .3rem; position:relative; }
+.waveform span{ width:4px; border-radius:3px; background:linear-gradient(180deg,#E2672A,#F0A15E); animation:wf 1.4s ease-in-out infinite; }
+.waveform span:nth-child(1){height:11px; animation-delay:-1.2s;}
+.waveform span:nth-child(2){height:20px; animation-delay:-0.9s;}
+.waveform span:nth-child(3){height:32px; animation-delay:-0.6s;}
+.waveform span:nth-child(4){height:17px; animation-delay:-1.4s;}
+.waveform span:nth-child(5){height:27px; animation-delay:-0.3s;}
+.waveform span:nth-child(6){height:12px; animation-delay:-0.7s;}
+.waveform span:nth-child(7){height:23px; animation-delay:-1.0s;}
+.waveform span:nth-child(8){height:10px; animation-delay:-0.5s;}
+@keyframes wf{ 0%,100%{transform:scaleY(.45);} 50%{transform:scaleY(1);} }
+@media (prefers-reduced-motion:reduce){ .waveform span{animation:none; transform:scaleY(.8);} }
+.hub-link{
+  display:inline-flex; align-items:center; gap:6px; margin-top:1.4rem; font-size:.85rem; font-weight:600;
+  color:#C7D0DE; text-decoration:none; border-bottom:1px solid rgba(199,208,222,.4); padding-bottom:2px;
+}
+.hub-link:hover{ color:#fff; border-color:#fff; }
+
+/* ================= INTRO ================= */
+.intro{ max-width:720px; margin:1.4rem auto .3rem; padding:0 1.4rem; text-align:center; }
+.intro p{ font-size:.9rem; line-height:1.6; color:var(--muted); margin:0; }
+
+/* ================= MODULES ================= */
+.modules{ max-width:820px; margin:0 auto; padding:2rem 1.4rem 4.4rem; }
+.module{ margin-bottom:2.3rem; }
+.module-head{ display:flex; align-items:center; gap:.75rem; margin-bottom:1rem; }
+.module-num{ width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:.95rem; flex:0 0 auto; }
+.module-title{ font-size:1.2rem; font-weight:700; margin:0; }
+.episodes{ display:flex; flex-direction:column; gap:.75rem; }
+.episode{ border:1px solid var(--line); border-radius:14px; padding:1rem 1.1rem; background:var(--bg); }
+.episode-top{ display:flex; align-items:baseline; gap:.6rem; margin-bottom:.6rem; flex-wrap:wrap; }
+.episode-code{ font-size:.68rem; font-weight:700; letter-spacing:.5px; color:#fff; padding:3px 9px; border-radius:20px; flex:0 0 auto; }
+.episode-title{ font-size:.95rem; font-weight:600; margin:0; }
+audio{ width:100%; height:36px; display:block; }
+.text-toggle{
+  margin-top:.6rem; background:none; border:none; color:var(--navy); font-weight:700; font-size:.8rem;
+  cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:5px;
+}
+.text-toggle .car{ display:inline-block; transition:transform .15s ease; }
+.text-toggle[aria-expanded="true"] .car{ transform:rotate(90deg); }
+.transcript{
+  display:none; margin-top:.7rem; padding:.8rem .9rem; background:var(--cream); border-radius:10px;
+  font-size:.83rem; line-height:1.55; color:var(--text);
+}
+.transcript.open{ display:block; }
+
+/* ================= FOOTER ================= */
+footer{ border-top:1px solid var(--line); padding:1.8rem 1.4rem 2.5rem; text-align:center; font-size:.78rem; color:var(--muted); }
+footer b{ color:var(--text); }
+
+@media (max-width:480px){
+  .hero{padding:1.3rem 1.1rem 1.5rem;}
+  .modules{padding:1.6rem 1.1rem 3.5rem;}
+  .episode{padding:.85rem;}
+  .a11y-bar{ gap:5px; padding:8px 10px; }
+  .a11y-btn{ font-size:.66rem; padding:5px 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="a11y-bar" role="toolbar" aria-label="Options d'accessibilité">
+  <span style="color:#C7D0DE; font-size:.7rem; font-weight:700; margin-right:2px;">♿ Accessibilité</span>
+  <button class="a11y-btn" id="btn-font" aria-pressed="false" onclick="toggleA11y('a11y-font', this)">🔤 Police adaptée</button>
+  <button class="a11y-btn" id="btn-contrast" aria-pressed="false" onclick="toggleA11y('a11y-contrast', this)">◐ Contraste renforcé</button>
+  <button class="a11y-btn" id="btn-falc" aria-pressed="false" onclick="toggleA11y('a11y-falc', this)">📖 Mode FALC</button>
+  <button class="a11y-btn" id="btn-hover" aria-pressed="false" onclick="toggleA11y('a11y-hover-read', this)">🔊 Lecture au survol</button>
+  <button class="a11y-btn" id="btn-motion" aria-pressed="false" onclick="toggleA11y('a11y-reduce-motion', this)">🎬 Alléger les animations</button>
+  <span class="a11y-size" aria-label="Taille du texte">
+    <button onclick="changeSize(-10)" aria-label="Réduire la taille du texte">A−</button>
+    <button onclick="changeSize(0)" aria-label="Taille du texte normale">A</button>
+    <button onclick="changeSize(10)" aria-label="Augmenter la taille du texte">A+</button>
+  </span>
+</div>
+
+<div class="hero">
+  <p class="eyebrow">BTS Banque · Activité 4 · Bloc 4</p>
+  <h1 data-speak="Le podcast de la personnalité et de la capacité juridique">Le podcast de la<br>personnalité et de la capacité juridique</h1>
+  <div class="waveform" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+  <p class="full-text">Deux épisodes, un par séquence — à écouter dans l'ordre du cours, ou juste celui qui vous manque.</p>
+  <p class="falc-text">Deux épisodes.<br>Un par séquence.<br>Écoutez dans l'ordre, ou choisissez juste celui qu'il vous faut.</p>
+  <a class="hub-link" href="../index.html">← Retour à l'Arcade de Mnémosia</a>
+</div>
+
+<div class="intro">
+  <p class="full-text">Chaque épisode reprend, à l'oral, l'essentiel du cours correspondant — pour réécouter un point
+  sans avoir le support sous les yeux. Le texte de chaque épisode est aussi disponible en dépliant « Voir le texte ».</p>
+  <p class="falc-text">Chaque épisode dit la même chose que le cours écrit.<br>Vous pouvez aussi lire le texte : cliquez sur « Voir le texte ».</p>
+</div>
+
+<div class="modules">
+
+  <div class="module">
+    <div class="module-head">
+      <div class="module-num" style="background:var(--teal);">1</div>
+      <h2 class="module-title" data-speak="Séquence 1. La personnalité juridique et la capacité juridique">Séquence 1 — La personnalité et la capacité juridique</h2>
+    </div>
+    <div class="episodes">
+
+      <div class="episode">
+        <div class="episode-top">
+          <span class="episode-code" style="background:var(--teal);">Épisode 1</span>
+          <p class="episode-title" data-speak="La personnalité juridique, la capacité, et la situation du mineur">La personnalité juridique, la capacité, et la situation du mineur</p>
+        </div>
+        <audio controls preload="none"><source src="S1_episode.mp3" type="audio/mpeg"></audio>
+        <button class="text-toggle" aria-expanded="false" onclick="toggleText(this)"><span class="car">▸</span> Voir le texte</button>
+        <div class="transcript">Toute personne physique est dotée de la personnalité juridique : elle en fait un sujet de
+        droit, titulaire de droits et d'obligations. Cette personnalité s'acquiert à la naissance, à deux
+        conditions : l'enfant doit naître vivant et viable. Par exception, lorsque l'intérêt de l'enfant
+        l'exige — notamment en matière de succession — elle peut remonter à la conception. La personnalité
+        juridique s'éteint au décès, mais aussi, plus rarement, par un jugement déclaratif de disparition ou
+        d'absence.<br><br>
+        Être titulaire d'un droit ne signifie pas pouvoir l'exercer soi-même : la capacité juridique distingue
+        la capacité de jouissance, qui est d'être titulaire de droits, de la capacité d'exercice, qui est de
+        pouvoir les exercer seul. Un mineur est ainsi titulaire de ses droits, mais ne peut, en principe,
+        accomplir seul les actes juridiques qui les engagent : c'est son administrateur légal — le plus souvent
+        l'un de ses parents ou les deux — qui le représente. Lorsque les deux parents exercent l'autorité
+        parentale en commun, chacun est administrateur légal, et un seul suffit pour un acte d'administration
+        courante. Si un seul parent exerce cette autorité, lui seul est administrateur.<br><br>
+        Lorsque plus aucun des deux parents ne peut exercer l'autorité parentale, une tutelle du mineur
+        s'organise autour de trois organes : le conseil de famille, qui décide des orientations et autorise
+        les actes les plus importants ; le tuteur, qui représente le mineur au quotidien ; et le subrogé
+        tuteur, qui surveille la gestion du tuteur.<br><br>
+        Enfin, un mineur de plus de seize ans peut être émancipé, de plein droit par le mariage, ou par
+        décision du juge à la demande de ses parents pour de justes motifs. Une fois émancipé, il devient
+        capable, comme un majeur, de tous les actes de la vie civile — mais reste soumis à certaines limites
+        d'âge indépendantes de la capacité civile, comme le droit de vote.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="module">
+    <div class="module-head">
+      <div class="module-num" style="background:var(--orange);">2</div>
+      <h2 class="module-title" data-speak="Séquence 2. Les majeurs protégés">Séquence 2 — Les majeurs protégés</h2>
+    </div>
+    <div class="episodes">
+
+      <div class="episode">
+        <div class="episode-top">
+          <span class="episode-code" style="background:var(--orange);">Épisode 2</span>
+          <p class="episode-title" data-speak="Les mesures de protection des majeurs et leurs conséquences">Les mesures de protection des majeurs et leurs conséquences</p>
+        </div>
+        <audio controls preload="none"><source src="S2_episode.mp3" type="audio/mpeg"></audio>
+        <button class="text-toggle" aria-expanded="false" onclick="toggleText(this)"><span class="car">▸</span> Voir le texte</button>
+        <div class="transcript">Un majeur protégé est une personne dont les facultés physiques ou mentales sont altérées au
+        point de ne plus pouvoir veiller seule sur ses intérêts. La loi organise trois mesures judiciaires,
+        gouvernées par un principe de proportionnalité : la protection doit être strictement adaptée à
+        l'altération constatée, ni plus, ni moins.<br><br>
+        La sauvegarde de justice est la mesure la plus légère : la personne conserve l'exercice de ses droits,
+        mais les actes qu'elle passerait pourraient être annulés ou réduits s'ils lui sont préjudiciables.
+        Elle ne peut excéder un an, renouvelable une fois. La curatelle s'adresse à une personne qui a besoin
+        d'être conseillée ou contrôlée pour les actes importants : elle agit seule pour la gestion courante,
+        mais a besoin de l'assistance de son curateur pour les actes de disposition — une mesure prononcée
+        pour cinq ans maximum, renouvelable une fois. La tutelle, enfin, est la mesure la plus protectrice :
+        la personne est représentée par son tuteur dans tous les actes de la vie civile, à l'exception de
+        quelques actes strictement personnels — parmi lesquels le droit de vote, que le juge ne peut plus lui
+        retirer depuis la loi du 23 mars 2019.<br><br>
+        Le tuteur est choisi parmi les proches : lorsque le juge désigne le conjoint ou un membre de la
+        famille, on parle de tutelle simplifiée ; pour les patrimoines plus importants, une tutelle complète
+        s'organise autour d'un conseil de famille, d'un tuteur et d'un subrogé tuteur.<br><br>
+        L'habilitation familiale permet à un proche d'être habilité par le juge à représenter la personne,
+        sans contrôle judiciaire continu comme dans une tutelle classique : le juge intervient une fois pour
+        l'accorder, puis la famille agit seule. Le mandat de protection future, à l'inverse, s'organise avant
+        toute altération : c'est la personne elle-même, encore capable, qui choisit à l'avance qui s'occupera
+        d'elle. Il existe sous deux formes : le mandat notarié, qui permet des actes de disposition, et le
+        mandat sous seing privé, limité aux actes d'administration.<br><br>
+        Enfin, une mesure de protection cesse automatiquement au décès de la personne protégée. Le compte est
+        alors bloqué dès que la banque a connaissance du décès, sauf pour le règlement des frais funéraires
+        dans une limite légale, en attendant le règlement de la succession.</div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <b>BTS Banque</b> · Activité 4 — Exercice de l'activité dans le cadre juridique · VOJES Bloc 4
+</footer>
+
+<script>
+function toggleA11y(cls, btn) {
+  const on = document.body.classList.toggle(cls);
+  btn.setAttribute('aria-pressed', on);
+  if (cls === 'a11y-hover-read' && !on) speechSynthesis.cancel();
+}
+
+let currentSize = 100;
+function changeSize(delta) {
+  currentSize = delta === 0 ? 100 : Math.max(80, Math.min(140, currentSize + delta));
+  document.documentElement.style.fontSize = currentSize + '%';
+}
+
+function toggleText(btn) {
+  const box = btn.nextElementSibling;
+  const open = box.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+}
+
+document.addEventListener('mouseover', function(e) {
+  if (!document.body.classList.contains('a11y-hover-read')) return;
+  const el = e.target.closest('[data-speak], h1, h2, .episode-title, .a11y-btn');
+  if (!el) return;
+  const text = el.dataset.speak || el.textContent;
+  if (!text) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.trim());
+  u.lang = 'fr-FR';
+  speechSynthesis.speak(u);
+});
+</script>
+
+</body>
+</html>
