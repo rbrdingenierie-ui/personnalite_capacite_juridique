@@ -1216,6 +1216,29 @@
   .lex-terme{ font-weight: 800; font-size: calc(14px * var(--a11y-scale)); color: var(--teal); margin: 0 0 4px; }
   .lex-def{ font-size: calc(12.5px * var(--a11y-scale)); line-height: 1.5; color: var(--navy); margin: 0; }
   body.a11y-contrast .lex-item{ border-color: #000; }
+
+  /* ---------- écran flashcards ---------- */
+  .fc-compteur{ text-align:center; font-size:calc(12.5px * var(--a11y-scale)); color:var(--navy-soft); font-weight:700; margin-bottom:12px; }
+  .fc-carte-zone{ perspective:1200px; margin-bottom:16px; }
+  .fc-carte{
+    position:relative; min-height:220px; border-radius:18px; cursor:pointer;
+    background:var(--white); border:2px solid var(--track);
+    display:flex; align-items:center; justify-content:center; padding:26px 22px; text-align:center;
+    box-shadow:0 6px 16px -8px rgba(31,56,100,.25);
+  }
+  .fc-carte.retournee{ background:var(--violet-soft); border-color:var(--violet); }
+  .fc-face-label{ position:absolute; top:12px; left:16px; font-size:calc(10.5px * var(--a11y-scale)); font-weight:800; letter-spacing:.5px; text-transform:uppercase; color:var(--navy-soft); }
+  .fc-texte{ font-size:calc(16px * var(--a11y-scale)); line-height:1.5; color:var(--navy); font-weight:600; }
+  .fc-astuce{ text-align:center; font-size:calc(11.5px * var(--a11y-scale)); color:var(--navy-soft); margin-bottom:16px; font-style:italic; }
+  .fc-nav{ display:flex; gap:10px; }
+  .fc-nav button{
+    flex:1; font-family:inherit; font-size:calc(13.5px * var(--a11y-scale)); font-weight:700;
+    background:var(--white); color:var(--navy); border:2px solid var(--track); border-radius:12px;
+    padding:12px; cursor:pointer; min-height:46px;
+  }
+  .fc-nav button:hover{ border-color:var(--violet); }
+  body.a11y-contrast .fc-carte{ border-color:#000; }
+  body.a11y-contrast .fc-texte{ color:#000; }
   body.a11y-contrast .lex-terme{ color: #000; }
 
   /* ===== CSS DES JEUX (fusionné) ===== */
@@ -1823,6 +1846,27 @@
   </div>
 
 
+  <!-- ===== ÉCRAN FLASHCARDS (superposé, masqué par défaut) ===== -->
+  <div class="ecran-lexique" id="ecranFlashcards">
+    <div class="lexique-entete">
+      <h1>🃏 Les flashcards</h1>
+      <button type="button" class="retour" id="btnFermerFlashcards">← Retour</button>
+    </div>
+    <p style="font-size:calc(13px * var(--a11y-scale)); color:var(--navy-soft); margin:0 0 16px;">Touche la carte pour voir la réponse, puis passe à la suivante.</p>
+    <p class="fc-compteur" id="fcCompteur"></p>
+    <div class="fc-carte-zone">
+      <div class="fc-carte" id="fcCarte">
+        <span class="fc-face-label" id="fcFaceLabel">Question</span>
+        <p class="fc-texte" id="fcTexte"></p>
+      </div>
+    </div>
+    <p class="fc-astuce">👆 Touche la carte pour la retourner</p>
+    <div class="fc-nav">
+      <button type="button" id="fcPrecedente">← Précédente</button>
+      <button type="button" id="fcSuivante">Suivante →</button>
+    </div>
+  </div>
+
   <!-- ===== ÉCRAN JEUX (superposé, masqué par défaut) ===== -->
   <div class="ecran-lexique" id="ecranJeuxGlobal">
     <div class="lexique-entete">
@@ -1895,13 +1939,13 @@
       <span class="carte-jeu-etat" data-etat="trous" aria-hidden="true">🔓</span>
     </button>
 
-    <a class="carte-jeu" style="--c:var(--violet);" href="flashcards/" id="lienFlashcards">
+    <a class="carte-jeu" style="--c:var(--violet);" href="#" id="lienFlashcards">
       <span class="carte-jeu-icone">🃏</span>
       <span class="carte-jeu-texte">
         <span class="carte-jeu-titre">Les flashcards</span>
         <span class="carte-jeu-desc">Durées, articles du Code civil, conditions de mise en place : teste-toi sur chaque mesure.</span>
       </span>
-      <span class="carte-jeu-etat" aria-hidden="true">↗</span>
+      <span class="carte-jeu-etat" aria-hidden="true">→</span>
     </a>
   </div>
 
@@ -2957,6 +3001,7 @@
   // exposées globalement pour que la fermeture de l'écran jeux (fusionné) puisse rafraîchir les badges
   window.chargerJeux = chargerJeux;
   window.dessiner = dessiner;
+  window.marquer = marquer;
 })();
 
 // ---- la barre se replie devant la borne de Ludo ----
@@ -3027,6 +3072,8 @@
 
   var elementsAMasquer = ['.arcade-scene', '.rappel', '#contenuArcade', '.badges-arcade'];
   function ouvrirLexique(){
+    var jg = document.getElementById('ecranJeuxGlobal'); if (jg) jg.classList.remove('ouvert');
+    var fc = document.getElementById('ecranFlashcards'); if (fc) fc.classList.remove('ouvert');
     elementsAMasquer.forEach(function(sel){
       var el = document.querySelector(sel);
       if (el) el.style.display = 'none';
@@ -3621,10 +3668,86 @@ document.querySelectorAll('.btn-jeu-retour').forEach(btn => {
   btn.addEventListener('click', retourSelecteur);
 });
 
+// ---- flashcards ----
+(function(){
+  var FLASHCARDS = [
+    { q:"À partir de quel âge un mineur peut-il être émancipé ?", r:"16 ans, par décision du juge à la demande de ses parents, pour de justes motifs." },
+    { q:"Quel article prévoit que l'argent gagné par le travail du mineur échappe à la jouissance légale de ses parents ?", r:"Article 386-4 du Code civil." },
+    { q:"Qui décide des orientations d'une tutelle de mineur, et autorise les actes les plus importants ?", r:"Le conseil de famille." },
+    { q:"Depuis quelle loi les animaux sont-ils reconnus comme des « êtres vivants doués de sensibilité » ?", r:"La loi du 16 février 2015 (article 515-14 du Code civil)." },
+    { q:"Quelle est la durée maximale d'une sauvegarde de justice ?", r:"1 an, renouvelable une fois." },
+    { q:"Quelle est la durée maximale d'une curatelle ou d'une tutelle ?", r:"5 ans, renouvelable." },
+    { q:"Quelle loi instaure le principe de proportionnalité pour les mesures de protection des majeurs ?", r:"La loi du 23 mars 2019." },
+    { q:"Depuis 2019, une personne sous tutelle peut-elle voter ?", r:"Oui — le juge ne peut plus lui retirer ce droit." },
+    { q:"Quels actes un majeur sous curatelle simple peut-il faire seul ?", r:"Les actes de la vie courante, les actes conservatoires et les actes d'administration." },
+    { q:"En curatelle renforcée, qui perçoit les revenus de la personne protégée ?", r:"Le curateur, pour éviter les risques de dilapidation." },
+    { q:"Combien de fois le juge intervient-il dans une habilitation familiale ?", r:"Une seule fois, pour l'accorder — ensuite la famille agit seule." },
+    { q:"Quelles sont les deux formes du mandat de protection future ?", r:"Notarié (permet les actes de disposition) et sous seing privé, contresigné par un avocat (limité aux actes d'administration)." },
+    { q:"Que devient une mesure de protection au décès de la personne protégée ?", r:"Elle cesse automatiquement." },
+    { q:"Qu'est-ce que la capacité de jouissance ?", r:"Le fait d'être titulaire de droits — sans forcément pouvoir les exercer soi-même." },
+    { q:"Qu'est-ce que la capacité d'exercice ?", r:"Le pouvoir d'exercer soi-même, librement, les droits dont on est titulaire." },
+    { q:"Un acte de disposition, par exemple lequel ?", r:"Vendre un immeuble, ou souscrire un emprunt important — un acte grave et irréversible pour le patrimoine." },
+  ];
+  var fcIdx = 0, fcRetournee = false;
+
+  function fcAfficher(){
+    fcRetournee = false;
+    var c = FLASHCARDS[fcIdx];
+    document.getElementById('fcCarte').classList.remove('retournee');
+    document.getElementById('fcFaceLabel').textContent = 'Question';
+    document.getElementById('fcTexte').textContent = c.q;
+    document.getElementById('fcCompteur').textContent = (fcIdx+1) + ' / ' + FLASHCARDS.length;
+  }
+  function fcRetourner(){
+    fcRetournee = !fcRetournee;
+    var c = FLASHCARDS[fcIdx];
+    document.getElementById('fcCarte').classList.toggle('retournee', fcRetournee);
+    document.getElementById('fcFaceLabel').textContent = fcRetournee ? 'Réponse' : 'Question';
+    document.getElementById('fcTexte').textContent = fcRetournee ? c.r : c.q;
+  }
+  document.getElementById('fcCarte').addEventListener('click', fcRetourner);
+  document.getElementById('fcSuivante').addEventListener('click', function(){
+    fcIdx = (fcIdx + 1) % FLASHCARDS.length;
+    fcAfficher();
+  });
+  document.getElementById('fcPrecedente').addEventListener('click', function(){
+    fcIdx = (fcIdx - 1 + FLASHCARDS.length) % FLASHCARDS.length;
+    fcAfficher();
+  });
+
+  var elementsAMasquerFc = ['.arcade-scene', '.rappel', '#contenuArcade', '.badges-arcade'];
+  window.ouvrirFlashcards = function(){
+    var jg = document.getElementById('ecranJeuxGlobal'); if (jg) jg.classList.remove('ouvert');
+    var lx = document.getElementById('ecranLexique'); if (lx) lx.classList.remove('ouvert');
+    elementsAMasquerFc.forEach(function(sel){
+      var el = document.querySelector(sel);
+      if (el) el.style.display = 'none';
+    });
+    document.getElementById('ecranFlashcards').classList.add('ouvert');
+    fcIdx = 0; fcAfficher();
+    window.scrollTo(0, 0);
+    if (typeof marquer === 'function') marquer('flashcards');
+  };
+  window.fermerFlashcards = function(){
+    document.getElementById('ecranFlashcards').classList.remove('ouvert');
+    elementsAMasquerFc.forEach(function(sel){
+      var el = document.querySelector(sel);
+      if (el) el.style.display = '';
+    });
+    window.scrollTo(0, 0);
+  };
+  var btnOuvrirFc = document.getElementById('lienFlashcards');
+  if (btnOuvrirFc) btnOuvrirFc.addEventListener('click', function(ev){ ev.preventDefault(); ouvrirFlashcards(); });
+  var btnFermerFc = document.getElementById('btnFermerFlashcards');
+  if (btnFermerFc) btnFermerFc.addEventListener('click', fermerFlashcards);
+})();
+
 // ---- les jeux : écran dédié, masque le reste du contenu ----
 (function(){
   var elementsAMasquer = ['.arcade-scene', '.rappel', '#contenuArcade', '.badges-arcade'];
   window.ouvrirJeux = function(){
+    var lx = document.getElementById('ecranLexique'); if (lx) lx.classList.remove('ouvert');
+    var fc = document.getElementById('ecranFlashcards'); if (fc) fc.classList.remove('ouvert');
     elementsAMasquer.forEach(function(sel){
       var el = document.querySelector(sel);
       if (el) el.style.display = 'none';
